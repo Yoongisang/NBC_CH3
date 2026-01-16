@@ -41,5 +41,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	// 앞 뒤 범위 이동
-	virtual void MovePlatform(float DeltaTime);
+	virtual void MovePlatform();
 };

@@ -20,21 +20,29 @@ void AMovingPlatform::BeginPlay()
 	StartLocation = GetActorLocation();
 	// 초기 이동 방향 세팅 == 엑터의 정면
 	MoveDirection = GetActorForwardVector();
+	// FTimerHandle을 활용한 코드
+	GetWorld()->GetTimerManager().SetTimer(
+		TimerHandle,
+		this,
+		&AMovingPlatform::MovePlatform,
+		0.016f,
+		true
+	);
 }
 
 // Called every frame
 void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	MovePlatform(DeltaTime);
+	//MovePlatform(DeltaTime);
 	
 }
 
-void AMovingPlatform::MovePlatform(float DeltaTime)
+void AMovingPlatform::MovePlatform()
 {
 	// 현재 위치 & 움직일 위치 선정
 	FVector CurrentLocation = GetActorLocation();
-	FVector NewLocation = CurrentLocation + (MoveDirection * MoveSpeed * DeltaTime);
+	FVector NewLocation = CurrentLocation + (MoveDirection * MoveSpeed * 0.016f);
 	// Platform 이동
 	SetActorLocation(NewLocation);
 	// 이동 거리 계산

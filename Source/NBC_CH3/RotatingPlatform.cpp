@@ -15,7 +15,7 @@ ARotatingPlatform::ARotatingPlatform()
 void ARotatingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
-	// 초기 위치 세팅(블루프린트에서 설정) == 초기위치에서 Dist값 계산 후 MaxRange를 넘어가면 방향 전환
+	// 초기 위치 세팅(블루프린트에서 설정)
 	SetActorLocation(StartLocation);
 	// 초기 Acotr 각도 세팅
 	SetActorRotation(StartRotation);

@@ -15,6 +15,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings")
 	FRotator RotateSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings")
+	FVector StartLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings")
+	FRotator StartRotation;
+
 	FTimerHandle TimerHandle;
 public:	
 	// Sets default values for this actor's properties
@@ -28,5 +34,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	// 회전
-	virtual void RotatePlatform(float DeltaTime);
+	virtual void RotatePlatform();
 };

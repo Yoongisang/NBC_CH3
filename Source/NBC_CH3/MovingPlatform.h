@@ -23,6 +23,9 @@ protected:
 	FVector StartLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings")
+	FRotator StartRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings")
 	bool bMovingForward = true;
 
 	FVector MoveDirection;

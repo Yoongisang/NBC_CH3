@@ -7,7 +7,7 @@
 ARotatingPlatform::ARotatingPlatform()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -15,22 +15,30 @@ ARotatingPlatform::ARotatingPlatform()
 void ARotatingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	// 초기 위치 세팅(블루프린트에서 설정) == 초기위치에서 Dist값 계산 후 MaxRange를 넘어가면 방향 전환
+	SetActorLocation(StartLocation);
+	// 초기 Acotr 각도 세팅
+	SetActorRotation(StartRotation);
+
+	// FTimerHandle을 활용한 코드
+	GetWorld()->GetTimerManager().SetTimer(
+		TimerHandle,
+		this,
+		&ARotatingPlatform::RotatePlatform,
+		0.016f,
+		true
+	);
 }
 
 // Called every frame
 void ARotatingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	RotatePlatform(DeltaTime);
 }
 
-void ARotatingPlatform::RotatePlatform(float DeltaTime)
+void ARotatingPlatform::RotatePlatform()
 {
-	// 현재 각도 & 회전할 각도 설정
-	FRotator CurrentRotation = GetActorRotation();
-	FRotator NewRotation = CurrentRotation + (RotateSpeed * DeltaTime);
 	// Platform 이동
-	SetActorRotation(NewRotation);
+	AddActorLocalRotation(RotateSpeed * 0.016f);
 }
 

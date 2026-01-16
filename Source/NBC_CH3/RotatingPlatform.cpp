@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "RotatingPlatform.h"
@@ -22,6 +22,15 @@ void ARotatingPlatform::BeginPlay()
 void ARotatingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	RotatePlatform(DeltaTime);
+}
 
+void ARotatingPlatform::RotatePlatform(float DeltaTime)
+{
+	// 현재 각도 & 회전할 각도 설정
+	FRotator CurrentRotation = GetActorRotation();
+	FRotator NewRotation = CurrentRotation + (RotateSpeed * DeltaTime);
+	// Platform 이동
+	SetActorRotation(NewRotation);
 }
 

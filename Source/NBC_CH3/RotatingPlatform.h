@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -11,6 +11,11 @@ class NBC_CH3_API ARotatingPlatform : public AActor
 {
 	GENERATED_BODY()
 	
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings")
+	FRotator RotateSpeed;
+
+	FTimerHandle TimerHandle;
 public:	
 	// Sets default values for this actor's properties
 	ARotatingPlatform();
@@ -22,5 +27,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	// 회전
+	virtual void RotatePlatform(float DeltaTime);
 };

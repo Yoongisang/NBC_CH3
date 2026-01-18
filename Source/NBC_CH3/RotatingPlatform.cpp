@@ -16,9 +16,9 @@ void ARotatingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
 	// 초기 위치 세팅(블루프린트에서 설정)
-	SetActorLocation(StartLocation);
+	StartLocation = GetActorLocation();
 	// 초기 Acotr 각도 세팅
-	SetActorRotation(StartRotation);
+	StartRotation = GetActorRotation();
 
 	// FTimerHandle을 활용한 코드
 	GetWorld()->GetTimerManager().SetTimer(
@@ -39,6 +39,7 @@ void ARotatingPlatform::Tick(float DeltaTime)
 void ARotatingPlatform::RotatePlatform()
 {
 	// Platform 이동
-	AddActorLocalRotation(RotateSpeed * 0.016f);
+	//AddActorLocalRotation(RotateSpeed * 0.016f);
+	AddActorWorldRotation(RotateSpeed * 0.016f);
 }
 

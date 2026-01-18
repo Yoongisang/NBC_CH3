@@ -35,4 +35,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	// 회전
 	virtual void RotatePlatform();
+	void SetRotateSpeed(FRotator Speed) { RotateSpeed = Speed; }
 };

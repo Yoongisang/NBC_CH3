@@ -45,4 +45,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	// 앞 뒤 범위 이동
 	virtual void MovePlatform();
+	void SetMoveSpeed(float Speed) { MoveSpeed = Speed; }
+	void SetMaxRange(float Range) { MaxRange = Range; }
 };

@@ -17,28 +17,27 @@ AMyCharacter::AMyCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	// 캡슐(루트 컴포넌트)
-	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapusuleComp"));
+	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComp"));
 	RootComponent = CapsuleComp;
-
+	CapsuleComp->SetSimulatePhysics(false);
 	// 메시
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
-	
+	MeshComp->SetSimulatePhysics(false);
 	// 스프링 암
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArmComp->SetupAttachment(RootComponent);
-	
 	// 카메라
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(SpringArmComp);
-
 }
 
 // Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	// Physics false
+
+	// Physics false 나중에 한번 생성자에서 디폴트 설정만 해야할지 아니면 게임시작 후 체크하고 false로 고정해줘야 하는지 질문 필요
 	if (CapsuleComp->IsSimulatingPhysics())
 	{
 		CapsuleComp->SetSimulatePhysics(false);

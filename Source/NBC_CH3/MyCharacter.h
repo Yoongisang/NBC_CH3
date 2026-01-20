@@ -11,6 +11,8 @@ class USkeletalMeshComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
+class UInputAction;
+struct FInputActionValue;
 
 UCLASS()
 class NBC_CH3_API AMyCharacter : public APawn
@@ -36,9 +38,24 @@ protected:
 	// 카메라 컴포넌트
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	TObjectPtr<UCameraComponent> CameraComp;
+
 	// InputMappingContext
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	// Move
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> MoveAction;
+	// Look
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> LookAction;
+
+	// MoveSpeed
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	float MoveSpeed;
+	// LookSensitivity
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	float LookSensitivity;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -46,4 +63,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Input Action
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
 };

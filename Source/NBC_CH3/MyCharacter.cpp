@@ -47,7 +47,7 @@ void AMyCharacter::BeginPlay()
 	{
 		MeshComp->SetSimulatePhysics(false);
 	}
-
+	// MappingContext 세팅
 	if (APlayerController* PC = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
@@ -68,6 +68,48 @@ void AMyCharacter::Tick(float DeltaTime)
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	// 바인드
+	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
+		EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
+	}
+}
 
+void AMyCharacter::Move(const FInputActionValue& Value)
+{
+	FVector2D MoveInput = Value.Get<FVector2D>();
+	// 로그 출력
+	if (IsValid(GEngine))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("X: %f, Y: %f"), MoveInput.X, MoveInput.Y));
+	}
+	// Move 구현
+	FVector Movement = FVector(MoveInput.X, MoveInput.Y, 0.f) * MoveSpeed * GetWorld()->GetDeltaSeconds();;
+	AddActorLocalOffset(Movement);
+}
+
+void AMyCharacter::Look(const FInputActionValue& Value)
+{
+	FVector2D MouseInput = Value.Get<FVector2D>();
+	// Tick밖에서 DeltaTime을 쓰는 방식
+	float Deltatime = GetWorld()->GetDeltaSeconds();
+
+	// Look 구현
+	// YawRotation
+	FRotator YawRotation = FRotator(0.f, MouseInput.X * LookSensitivity * Deltatime, 0.f);	
+	AddActorLocalRotation(YawRotation);
+	//PitchRotation
+	FRotator ArmRotation = SpringArmComp->GetRelativeRotation();
+	ArmRotation.Pitch = FMath::Clamp(ArmRotation.Pitch - MouseInput.Y * LookSensitivity * Deltatime, -80.f, 80.f);
+	SpringArmComp->SetRelativeRotation(ArmRotation);
+
+	// 로그 출력
+	if (IsValid(GEngine))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("X: %f, Y: %f"), MouseInput.X, MouseInput.Y));
+	}
+	
+	
 }
 

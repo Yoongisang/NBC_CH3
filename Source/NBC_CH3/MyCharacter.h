@@ -26,6 +26,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+#pragma region Component
 	// 캡슐 컴포넌트
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	TObjectPtr<UCapsuleComponent> CapsuleComp;
@@ -38,7 +39,9 @@ protected:
 	// 카메라 컴포넌트
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	TObjectPtr<UCameraComponent> CameraComp;
+#pragma endregion
 
+#pragma region Input
 	// InputMappingContext
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -48,13 +51,14 @@ protected:
 	// Look
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> LookAction;
-
 	// MoveSpeed
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	float MoveSpeed;
 	// LookSensitivity
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	float LookSensitivity;
+#pragma endregion
+
 
 public:	
 	// Called every frame
@@ -62,8 +66,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+#pragma region Action
 	// Input Action
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+#pragma endregion
 };

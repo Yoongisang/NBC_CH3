@@ -41,8 +41,6 @@ protected:
 	virtual void BeginPlay() override;
 	
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	// 앞 뒤 범위 이동
 	virtual void MovePlatform();
 	void SetMoveSpeed(float Speed) { MoveSpeed = Speed; }

@@ -31,8 +31,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	// 회전
 	virtual void RotatePlatform();
 	void SetRotateSpeed(FRotator Speed) { RotateSpeed = Speed; }

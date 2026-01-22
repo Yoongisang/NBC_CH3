@@ -30,12 +30,6 @@ void ARotatingPlatform::BeginPlay()
 	);
 }
 
-// Called every frame
-void ARotatingPlatform::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void ARotatingPlatform::RotatePlatform()
 {
 	// Platform 이동

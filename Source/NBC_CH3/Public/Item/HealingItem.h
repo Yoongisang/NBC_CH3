@@ -4,23 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "Item/BaseItem.h"
-#include "CoinItem.generated.h"
+#include "HealingItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class NBC_CH3_API ACoinItem : public ABaseItem
+class NBC_CH3_API AHealingItem : public ABaseItem
 {
 	GENERATED_BODY()
 
 public:
-	ACoinItem();
+    AHealingItem();
 
 protected:
     // ActivateItem 함수를 오버라이드
     virtual void ActivateItem(AActor* Activator) override;
-    // 코인 획득 시 플레이어에게 줄 점수
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    int32 PointValue;
+
+private:
+    // 회복량
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Healing", meta = (AllowPrivateAccess = "true"))
+    int32 HealAmount;
 };

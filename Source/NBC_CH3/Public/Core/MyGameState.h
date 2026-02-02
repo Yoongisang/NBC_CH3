@@ -26,7 +26,7 @@ public:
 	void AddScore(int32 Amount);
 	// 게임이 완전히 끝났을 때 (모든 레벨 종료) 실행되는 함수
 	UFUNCTION(BlueprintCallable, Category = "Level")
-	void OnGameOver();
+	void OnGameEnd();
 
 	// 레벨을 시작할 때, 아이템 스폰 및 타이머 설정
 	void StartLevel();

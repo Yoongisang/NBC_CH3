@@ -8,27 +8,66 @@
 ABaseItem::ABaseItem()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
+    // 루트 컴포넌트 생성 및 설정
+    Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
+    SetRootComponent(Scene);
+
+    // 충돌 컴포넌트 생성 및 설정
+    Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
+    // 겹침만 감지하는 프로파일 설정
+    Collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+    // 루트 컴포넌트로 설정
+    Collision->SetupAttachment(Scene);
+
+    // 스태틱 메시 컴포넌트 생성 및 설정
+    StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+    StaticMesh->SetupAttachment(Collision);
+   
+    // Overlap 이벤트 바인딩
+    Collision->OnComponentBeginOverlap.AddDynamic(this, &ABaseItem::OnItemOverlap);
+    Collision->OnComponentEndOverlap.AddDynamic(this, &ABaseItem::OnItemEndOverlap);
 }
 
-void ABaseItem::OnItemOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ABaseItem::OnItemOverlap(
+    UPrimitiveComponent* OverlappedComp, 
+    AActor* OtherActor, 
+    UPrimitiveComponent* OtherComp, 
+    int32 OtherBodyIndex, bool bFromSweep, 
+    const FHitResult& SweepResult)
 {
+    // OtherActor가 플레이어인지 확인 ("Player" 태그 활용)
+    if (OtherActor && OtherActor->ActorHasTag("Player"))
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Overlap!!!")));
+        // 아이템 사용 (획득) 로직 호출
+        ActivateItem(OtherActor);
+    }
 }
 
-void ABaseItem::OnItemEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void ABaseItem::OnItemEndOverlap(
+    UPrimitiveComponent* OverlappedComp, 
+    AActor* OtherActor, 
+    UPrimitiveComponent* OtherComp, 
+    int32 OtherBodyIndex)
 {
+
 }
 
 void ABaseItem::ActivateItem(AActor* Activator)
 {
+    GEngine->AddOnScreenDebugMessage(
+        -1, 2.0f, FColor::Green, 
+        FString::Printf(TEXT("Overlap!!")));
 }
 
 FName ABaseItem::GetItemType() const
 {
-	return FName();
+	return ItemType;
 }
 
 void ABaseItem::DestroyItem()
 {
+    Destroy();
 }

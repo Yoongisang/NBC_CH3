@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -13,5 +13,13 @@ UCLASS()
 class NBC_CH3_API ACoinItem : public ABaseItem
 {
 	GENERATED_BODY()
-	
+public:
+	ACoinItem();
+protected:
+    // ActivateItem 함수를 오버라이드
+    virtual void ActivateItem(AActor* Activator) override;
+
+    // 코인 획득 시 플레이어에게 줄 점수
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+    int32 PointValue;
 };

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Spawning/SpawnVolume.h"
@@ -7,21 +7,28 @@
 ASpawnVolume::ASpawnVolume()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
-// Called when the game starts or when spawned
-void ASpawnVolume::BeginPlay()
+AActor* ASpawnVolume::SpawnRandomItem()
 {
-	Super::BeginPlay();
-	
+	return nullptr;
 }
 
-// Called every frame
-void ASpawnVolume::Tick(float DeltaTime)
+AActor* ASpawnVolume::SpawnItem(TSubclassOf<AActor> ItemClass)
 {
-	Super::Tick(DeltaTime);
-
+	return nullptr;
 }
+
+FVector ASpawnVolume::GetRandomPointInVolume() const
+{
+	return FVector();
+}
+
+FItemSpawnRow* ASpawnVolume::GetRandomItem() const
+{
+	return nullptr;
+}
+
 

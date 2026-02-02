@@ -1,7 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/BaseItem.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ABaseItem::ABaseItem()
@@ -11,17 +12,23 @@ ABaseItem::ABaseItem()
 
 }
 
-// Called when the game starts or when spawned
-void ABaseItem::BeginPlay()
+void ABaseItem::OnItemOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::BeginPlay();
-	
 }
 
-// Called every frame
-void ABaseItem::Tick(float DeltaTime)
+void ABaseItem::OnItemEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	Super::Tick(DeltaTime);
-
 }
 
+void ABaseItem::ActivateItem(AActor* Activator)
+{
+}
+
+FName ABaseItem::GetItemType() const
+{
+	return FName();
+}
+
+void ABaseItem::DestroyItem()
+{
+}

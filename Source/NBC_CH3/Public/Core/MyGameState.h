@@ -24,7 +24,7 @@ public:
 	int32 GetScore() const;
 	UFUNCTION(BlueprintCallable, Category = "Score")
 	void AddScore(int32 Amount);
-	// 게임이 완전히 끝났을 때 (모든 레벨 종료) 실행되는 함수
+	// 게임이 완전히 끝났을 때 (모든 레벨 종료 || 사망) 실행되는 함수
 	UFUNCTION(BlueprintCallable, Category = "Level")
 	void OnGameEnd();
 
@@ -34,12 +34,14 @@ public:
 	void OnLevelTimeUp();
 	// 코인을 주웠을 때 호출
 	void OnCoinCollected();
-	// 레벨을 강제 종료하고 다음 레벨로 이동
-	void EndLevel();
-
-private:
+	// 웨이브가 끝나면 호출
+	void EndWave();
+	// HUD 업데이트
+	void UpdateHUD();
 	// 매 레벨이 끝나기 전까지 시간이 흐르도록 관리하는 타이머
 	FTimerHandle LevelTimerHandle;
+	// HUD를 업데이트 하기위한 타이머
+	FTimerHandle HUDUpdateTimerHandle;
 
 	// 현재 점수
 	UPROPERTY(VisibleAnyWhere, BlueprintReadWrite, Category = "Score", meta = (AllowPrivateAccess = "true"))
@@ -62,5 +64,16 @@ private:
 	// 실제 레벨 맵 이름 배열. 여기 있는 인덱스를 차례대로 연동
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level", meta = (AllowPrivateAccess = "true"))
 	TArray<FName> LevelMapNames;
+	// 현재 진행 중인 웨이브 인덱스
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave", meta = (AllowPrivateAccess = "true"))
+	int32 CurrentWaveIndex;
+	// 전체 웨이브의 개수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave", meta = (AllowPrivateAccess = "true"))
+	int32 MaxWaves;
+	// 현재 진행 중인 웨이브의 아이템 스폰 갯수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave", meta = (AllowPrivateAccess = "true"))
+	int32 ItemToSpawn;
+
+
 
 };

@@ -2,17 +2,147 @@
 
 
 #include "Player/MyPlayerController.h"
+#include "Core/MyGameInstance.h"
+#include "Core/MyGameState.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/TextBlock.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 AMyPlayerController::AMyPlayerController()
 	: InputMappingContext(nullptr),
 	MoveAction(nullptr),
 	JumpAction(nullptr),
 	LookAction(nullptr),
-	SprintAction(nullptr)
+	SprintAction(nullptr),
+	HUDWidgetClass(nullptr),
+	HUDWidgetInstance(nullptr),
+	MainMenuWidgetClass(nullptr),
+	MainMenuWidgetInstance(nullptr)
 {
+}
+
+UUserWidget* AMyPlayerController::GetHUDWidget() const
+{
+	return HUDWidgetInstance;
+}
+
+void AMyPlayerController::ShowGameHUD()
+{
+	// HUD가 켜져 있다면 닫기
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->RemoveFromParent();
+		HUDWidgetInstance = nullptr;
+	}
+
+	// 이미 메뉴가 떠 있으면 제거
+	if (MainMenuWidgetInstance)
+	{
+		MainMenuWidgetInstance->RemoveFromParent();
+		MainMenuWidgetInstance = nullptr;
+	}
+
+	if (HUDWidgetClass)
+	{
+		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+		if (HUDWidgetInstance)
+		{
+			HUDWidgetInstance->AddToViewport();
+
+			bShowMouseCursor = false;
+			SetInputMode(FInputModeGameOnly());
+
+			AMyGameState* GameState = GetWorld() ? GetWorld()->GetGameState<AMyGameState>() : nullptr;
+			if (GameState)
+			{
+				GameState->UpdateHUD();
+			}
+		}
+	}
+}
+
+void AMyPlayerController::ShowMainMenu(bool bIsRestart)
+{
+	// HUD가 켜져 있다면 닫기
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->RemoveFromParent();
+		HUDWidgetInstance = nullptr;
+	}
+
+	// 이미 메뉴가 떠 있으면 제거
+	if (MainMenuWidgetInstance)
+	{
+		MainMenuWidgetInstance->RemoveFromParent();
+		MainMenuWidgetInstance = nullptr;
+	}
+
+	// 메뉴 UI 생성
+	if (MainMenuWidgetClass)
+	{
+		MainMenuWidgetInstance = CreateWidget<UUserWidget>(this, MainMenuWidgetClass);
+		if (MainMenuWidgetInstance)
+		{
+			MainMenuWidgetInstance->AddToViewport();
+			bShowMouseCursor = true;
+			SetInputMode(FInputModeUIOnly());
+		}
+		// 첫 번째 버튼 (Start/Restart) 재활용
+		if (UTextBlock* ButtonText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("StartButtonText"))))
+		{
+			if (bIsRestart)
+			{
+				ButtonText->SetText(FText::FromString(TEXT("Restart")));
+			}
+			else
+			{
+				ButtonText->SetText(FText::FromString(TEXT("Start")));
+			}
+		}
+		// 2. 두 번째 버튼 (Exit/Main Menu) 텍스트 재활용
+		if (UTextBlock* ExitText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("ExitButtonText"))))
+		{
+			if (bIsRestart)
+			{
+				// 게임 오버 상황 -> "메인으로"
+				ExitText->SetText(FText::FromString(TEXT("Main Menu")));
+			}
+			else
+			{
+				// 메인 메뉴 상황 -> "종료"
+				ExitText->SetText(FText::FromString(TEXT("Exit")));
+			}
+		}
+	}
+}
+
+void AMyPlayerController::StartGame()
+{
+	if (UMyGameInstance* GameInstance = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(this)))
+	{
+		GameInstance->CurrentLevelIndex = 0;
+		GameInstance->TotalScore = 0;
+	}
+
+	UGameplayStatics::OpenLevel(GetWorld(), FName("BasicLevel"));
+}
+
+void AMyPlayerController::RetryLevel()
+{
+	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
+}
+
+void AMyPlayerController::QuitGame()
+{
+	UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, true);
+}
+
+void AMyPlayerController::GoToMainMenu()
+{
+	UGameplayStatics::OpenLevel(this, FName("MenuLevel"));
 }
 
 void AMyPlayerController::BeginPlay()
@@ -31,13 +161,10 @@ void AMyPlayerController::BeginPlay()
 		}
 	}
 
-	// HUD 위젯 생성 및 표시
-	if (HUDWidgetClass)
+	// 게임 실행 시 메뉴 레벨에서 메뉴 UI 먼저 표시
+	FString CurrentMapName = GetWorld()->GetMapName();
+	if (CurrentMapName.Contains("MenuLevel"))
 	{
-		UUserWidget* HUDWidget = CreateWidget<UUserWidget>(this, HUDWidgetClass);
-		if (HUDWidget)
-		{
-			HUDWidget->AddToViewport();
-		}
+		ShowMainMenu(false);
 	}
 }

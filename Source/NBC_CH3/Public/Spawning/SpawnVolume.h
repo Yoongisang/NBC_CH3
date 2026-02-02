@@ -16,6 +16,7 @@ class NBC_CH3_API ASpawnVolume : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ASpawnVolume();
+
 	// 아이템 스폰 관련
 	UFUNCTION(BlueprintCallable, Category = "Spawning")
 	AActor* SpawnRandomItem(); 
@@ -25,7 +26,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Spawning")
 	FVector GetRandomPointInVolume() const;
 	FItemSpawnRow* GetRandomItem() const;
-
 private:
 	// 씬컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
@@ -36,5 +36,4 @@ private:
 	// 데이터 테이블
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDataTable> ItemDataTable;
-
 };

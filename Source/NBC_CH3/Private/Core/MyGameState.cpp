@@ -5,23 +5,39 @@
 #include "Kismet/GameplayStatics.h"
 #include "Spawning/SpawnVolume.h"
 #include "Item/CoinItem.h"
+#include "Core/MyGameInstance.h"
+#include "Player/MyPlayerController.h"
+#include "Player/MyCharacter.h"
+#include "Components/TextBlock.h"
+#include "Blueprint/UserWidget.h"
 
 AMyGameState::AMyGameState()
 {
 	Score = 0;
 	SpawnedCoinCount = 0;
 	CollectedCoinCount = 0;
-	LevelDuration = 30.0f; // 한 레벨당 30초
+	LevelDuration = 10.0f;
 	CurrentLevelIndex = 0;
 	MaxLevels = 3;
+	CurrentWaveIndex = 1;
+	MaxWaves = 3;
+	ItemToSpawn = 40;
 }
 
 void AMyGameState::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 게임 시작 시 첫 레벨부터 진행
+	UpdateHUD();
 	StartLevel();
+
+	GetWorldTimerManager().SetTimer(
+		HUDUpdateTimerHandle,
+		this,
+		&AMyGameState::UpdateHUD,
+		0.1f,
+		true
+	);
 }
 
 int32 AMyGameState::GetScore() const
@@ -31,18 +47,49 @@ int32 AMyGameState::GetScore() const
 
 void AMyGameState::AddScore(int32 Amount)
 {
-	Score += Amount;
-	UE_LOG(LogTemp, Warning, TEXT("Score: %d"), Score);
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			MyGameInstance->AddToScore(Amount);
+		}
+	}
 }
 
 void AMyGameState::OnGameEnd()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Game Over!!"));
-	// 여기서 UI를 띄운다거나, 재시작 기능을 넣을 수도 있음
+	// 타이머 해제
+	GetWorldTimerManager().ClearTimer(LevelTimerHandle);
+
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (AMyPlayerController* PC = Cast<AMyPlayerController>(PlayerController))
+		{
+			PC->ShowMainMenu(true);
+		}
+	}
 }
 
 void AMyGameState::StartLevel()
 {
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (AMyPlayerController* PC = Cast<AMyPlayerController>(PlayerController))
+		{
+			PC->ShowGameHUD();
+		}
+	}
+
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			CurrentLevelIndex = MyGameInstance->CurrentLevelIndex;
+		}
+	}
+
 	// 레벨 시작 시, 코인 개수 초기화
 	SpawnedCoinCount = 0;
 	CollectedCoinCount = 0;
@@ -50,8 +97,6 @@ void AMyGameState::StartLevel()
 	// 현재 맵에 배치된 모든 SpawnVolume을 찾아 아이템 40개를 스폰
 	TArray<AActor*> FoundVolumes;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
-
-	const int32 ItemToSpawn = 40;
 
 	for (int32 i = 0; i < ItemToSpawn; i++)
 	{
@@ -79,6 +124,8 @@ void AMyGameState::StartLevel()
 		false
 	);
 
+	UpdateHUD();
+
 	UE_LOG(LogTemp, Warning, TEXT("Level %d Start!, Spawned %d coin"),
 		CurrentLevelIndex + 1,
 		SpawnedCoinCount);
@@ -86,8 +133,8 @@ void AMyGameState::StartLevel()
 
 void AMyGameState::OnLevelTimeUp()
 {
-	// 시간이 다 되면 레벨을 종료
-	EndLevel();
+	// 시간이 다 되면 웨이브를 종료
+	EndWave();
 }
 
 void AMyGameState::OnCoinCollected()
@@ -98,35 +145,94 @@ void AMyGameState::OnCoinCollected()
 		CollectedCoinCount,
 		SpawnedCoinCount);
 
-		// 현재 레벨에서 스폰된 코인을 전부 주웠다면 즉시 레벨 종료
+		// 현재 레벨에서 스폰된 코인을 전부 주웠다면 즉시 웨이브 종료
 		if (SpawnedCoinCount > 0 && CollectedCoinCount >= SpawnedCoinCount)
 		{
-			EndLevel();
+			EndWave();
 		}
 }
 
-void AMyGameState::EndLevel()
+void AMyGameState::EndWave()
 {
 	// 타이머 해제
 	GetWorldTimerManager().ClearTimer(LevelTimerHandle);
-	// 다음 레벨 인덱스로
-	CurrentLevelIndex++;
-
-	// 모든 레벨을 다 돌았다면 게임 오버 처리
-	if (CurrentLevelIndex >= MaxLevels)
+	// 1->2, 2->3
+	if (CurrentWaveIndex < MaxWaves)
 	{
-		OnGameEnd();
+		CurrentWaveIndex++;
+		LevelDuration += 5;
+		ItemToSpawn += 5;
+
+		StartLevel();
+
 		return;
 	}
 
-	// 레벨 맵 이름이 있다면 해당 맵 불러오기
-	if (LevelMapNames.IsValidIndex(CurrentLevelIndex))
+	if (UGameInstance* GameInstance = GetGameInstance())
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), LevelMapNames[CurrentLevelIndex]);
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			AddScore(Score);
+			CurrentLevelIndex++;
+			MyGameInstance->CurrentLevelIndex = CurrentLevelIndex;
+
+			if (CurrentLevelIndex >= MaxLevels)
+			{
+				OnGameEnd();
+				return;
+			}
+
+			if (LevelMapNames.IsValidIndex(CurrentLevelIndex))
+			{
+				UGameplayStatics::OpenLevel(GetWorld(), LevelMapNames[CurrentLevelIndex]);
+			}
+			else
+			{
+				OnGameEnd();
+			}
+		}
 	}
-	else
+}
+
+void AMyGameState::UpdateHUD()
+{
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
-		// 맵 이름이 없으면 게임오버
-		OnGameEnd();
+		AMyPlayerController* PC = Cast<AMyPlayerController>(PlayerController);
+		{
+			if (UUserWidget* HUDWidget = PC->GetHUDWidget())
+			{
+				if (UTextBlock* TimeText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Time"))))
+				{
+					float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
+					TimeText->SetText(FText::FromString(FString::Printf(TEXT("Time: %.1f"), RemainingTime)));
+				}
+
+				if (UTextBlock* ScoreText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Score"))))
+				{
+					if (UGameInstance* GameInstance = GetGameInstance())
+					{
+						UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+						if (MyGameInstance)
+						{
+							ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), MyGameInstance->TotalScore)));
+						}
+					}
+				}
+
+				if (UTextBlock* LevelIndexText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Level"))))
+				{
+					LevelIndexText->SetText(FText::FromString(FString::Printf(TEXT("Level: %d | Wave: %d"), CurrentLevelIndex + 1, CurrentWaveIndex)));
+				}
+
+				if (UTextBlock* HPText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Health"))))
+				{
+					if (AMyCharacter* MyCharacter = Cast<AMyCharacter>(PC->GetPawn()))
+					HPText->SetText(FText::FromString(FString::Printf(TEXT("HP : %d"), MyCharacter->GetHealth())));
+				}
+			}
+		}
 	}
+
 }

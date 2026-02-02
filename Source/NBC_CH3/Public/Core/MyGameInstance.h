@@ -24,9 +24,8 @@ public:
 	void AddToScore(int32 Amount);
 
 	UFUNCTION(BlueprintCallable, Category = "GameData")
-	int32 GetCurrentLevelIndex(int32 Amount) const;
+	int32 GetCurrentLevelIndex() const;
 
-private:
 	// 게임 전체 누적 점수
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData", meta = (AllowPrivateAccess = "true"))
 	int32 TotalScore;

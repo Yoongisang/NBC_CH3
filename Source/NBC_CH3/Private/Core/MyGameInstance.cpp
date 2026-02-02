@@ -20,7 +20,7 @@ void UMyGameInstance::AddToScore(int32 Amount)
 	UE_LOG(LogTemp, Warning, TEXT("Total Score Updated: %d"), TotalScore);
 }
 
-int32 UMyGameInstance::GetCurrentLevelIndex(int32 Amount) const
+int32 UMyGameInstance::GetCurrentLevelIndex() const
 {
 	return CurrentLevelIndex;
 }

@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Actor.h"
+#include "Core/MyGameState.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -38,7 +39,7 @@ AMyCharacter::AMyCharacter()
 
 int32 AMyCharacter::GetHealth() const
 {
-	return int32();
+	return (int32)Health;
 }
 
 void AMyCharacter::AddHealth(float Amount)
@@ -58,56 +59,25 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
         {
             if (PlayerController->MoveAction)
             {
-                EnhancedInput->BindAction(
-                    PlayerController->MoveAction,
-                    ETriggerEvent::Triggered,
-                    this,
-                    &AMyCharacter::Move
-                );
+                EnhancedInput->BindAction(PlayerController->MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
             }
 
             if (PlayerController->JumpAction)
             {
-                EnhancedInput->BindAction(
-                    PlayerController->JumpAction,
-                    ETriggerEvent::Triggered,
-                    this,
-                    &AMyCharacter::StartJump
-                );
+                EnhancedInput->BindAction( PlayerController->JumpAction, ETriggerEvent::Triggered, this, &AMyCharacter::StartJump);
 
-                EnhancedInput->BindAction(
-                    PlayerController->MoveAction,
-                    ETriggerEvent::Completed,
-                    this,
-                    &AMyCharacter::StopJump
-                );
+                EnhancedInput->BindAction(PlayerController->MoveAction, ETriggerEvent::Completed, this, &AMyCharacter::StopJump);
             }
 
             if (PlayerController->LookAction)
             {
-                EnhancedInput->BindAction(
-                    PlayerController->LookAction,
-                    ETriggerEvent::Triggered,
-                    this,
-                    &AMyCharacter::Look
-                );
+                EnhancedInput->BindAction(PlayerController->LookAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
             }
 
             if (PlayerController->SprintAction)
             {
-                EnhancedInput->BindAction(
-                    PlayerController->SprintAction,
-                    ETriggerEvent::Triggered,
-                    this,
-                    &AMyCharacter::StartSprint
-                );
-
-                EnhancedInput->BindAction(
-                    PlayerController->SprintAction,
-                    ETriggerEvent::Completed,
-                    this,
-                    &AMyCharacter::StopSprint
-                );
+                EnhancedInput->BindAction(PlayerController->SprintAction, ETriggerEvent::Triggered, this, &AMyCharacter::StartSprint);
+                EnhancedInput->BindAction(PlayerController->SprintAction, ETriggerEvent::Completed, this, &AMyCharacter::StopSprint);
             }
         }
     }
@@ -174,6 +144,12 @@ void AMyCharacter::OnDeath()
 {
     UE_LOG(LogTemp, Error, TEXT("Character is Dead!"));
     // 사망 후 로직
+    if (IsValid(GetWorld()))
+    {
+        AMyGameState* MyGameState = GetWorld()->GetGameState<AMyGameState>();
+        MyGameState->OnGameEnd();
+    }
+    
 }
 
 float AMyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

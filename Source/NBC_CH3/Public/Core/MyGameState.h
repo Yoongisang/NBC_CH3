@@ -38,6 +38,8 @@ public:
 	void EndWave();
 	// HUD 업데이트
 	void UpdateHUD();
+
+private:
 	// 매 레벨이 끝나기 전까지 시간이 흐르도록 관리하는 타이머
 	FTimerHandle LevelTimerHandle;
 	// HUD를 업데이트 하기위한 타이머
@@ -46,12 +48,14 @@ public:
 	// 현재 점수
 	UPROPERTY(VisibleAnyWhere, BlueprintReadWrite, Category = "Score", meta = (AllowPrivateAccess = "true"))
 	int32 Score;
+
 	// 현재 레벨에서 스폰된 코인 개수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coin", meta = (AllowPrivateAccess = "true"))
 	int32 SpawnedCoinCount;
 	// 플레이어가 수집한 코인 개수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coin", meta = (AllowPrivateAccess = "true"))
 	int32 CollectedCoinCount;
+
 	// 각 레벨이 유지되는 시간 (초 단위)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Level", meta = (AllowPrivateAccess = "true"))
 	float LevelDuration;
@@ -64,6 +68,7 @@ public:
 	// 실제 레벨 맵 이름 배열. 여기 있는 인덱스를 차례대로 연동
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level", meta = (AllowPrivateAccess = "true"))
 	TArray<FName> LevelMapNames;
+
 	// 현재 진행 중인 웨이브 인덱스
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave", meta = (AllowPrivateAccess = "true"))
 	int32 CurrentWaveIndex;

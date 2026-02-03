@@ -29,7 +29,7 @@ public:
 
 protected:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+    // 조작 관련
     UFUNCTION()
     void Move(const FInputActionValue& value);
     UFUNCTION()
@@ -42,6 +42,7 @@ protected:
     void StartSprint(const FInputActionValue& value);
     UFUNCTION()
     void StopSprint(const FInputActionValue& value);
+
     // 사망 처리 함수 (체력이 0 이하가 되었을 때 호출)
     UFUNCTION(BlueprintCallable, Category = "Health")
     virtual void OnDeath();

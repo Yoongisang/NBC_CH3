@@ -121,27 +121,31 @@ void AMyPlayerController::ShowMainMenu(bool bIsRestart)
 
 void AMyPlayerController::StartGame()
 {
+	// 메뉴 창에서 Start 입력 -> GameInstance의 LevelIndex = 0 ToScore = 0 입력 
 	if (UMyGameInstance* GameInstance = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(this)))
 	{
-		GameInstance->CurrentLevelIndex = 0;
-		GameInstance->TotalScore = 0;
+		GameInstance->SetCurrentLevelIndex(0);
+		GameInstance->SetToScore(0);
 	}
-
+	// 인덱스 0 Level오픈
 	UGameplayStatics::OpenLevel(GetWorld(), FName("BasicLevel"));
 }
 
 void AMyPlayerController::RetryLevel()
 {
+	// 현재 Level 다시 시작
 	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
 }
 
 void AMyPlayerController::QuitGame()
 {
+	// 종료
 	UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, true);
 }
 
 void AMyPlayerController::GoToMainMenu()
 {
+	// 첫 메인 메뉴로 돌아감
 	UGameplayStatics::OpenLevel(this, FName("MenuLevel"));
 }
 

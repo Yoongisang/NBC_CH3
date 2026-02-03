@@ -21,6 +21,7 @@ void ACoinItem::ActivateItem(AActor* Activator)
         {
             if (AMyGameState* GameState = World->GetGameState<AMyGameState>())
             {
+                // GameState의 점수 및 모은 코인 수 추가
                 GameState->AddScore(PointValue);
                 GameState->OnCoinCollected();
             }

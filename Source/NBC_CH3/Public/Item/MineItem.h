@@ -24,8 +24,7 @@ protected:
     void Explode();
 
 private:
-    // 멤버 변수
-    // 지뢰 발동 여부
+    // 지뢰 발동 타이머 관리
     FTimerHandle ExplosionTimerHandle;
     // 오버렙 범위 판정을위한 collision
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component", meta = (AllowPrivateAccess = "true"))

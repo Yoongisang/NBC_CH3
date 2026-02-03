@@ -143,6 +143,17 @@ void AMyCharacter::StopSprint(const FInputActionValue& value)
 void AMyCharacter::OnDeath()
 {
     UE_LOG(LogTemp, Error, TEXT("Character is Dead!"));
+
+    // 입력 비활성화
+    if (APlayerController* PC = Cast<APlayerController>(GetController()))
+    {
+        DisableInput(PC);
+    }
+
+    // 움직임 즉시 중지
+    GetCharacterMovement()->StopMovementImmediately();
+
+
     // 사망 후 로직
     if (IsValid(GetWorld()))
     {

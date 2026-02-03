@@ -9,19 +9,20 @@ ASpawnVolume::ASpawnVolume()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
+	// Scene을 RootConponent 설정 및 SpawningBox 설정
 	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	SetRootComponent(Scene);
 
 	SpawningBox = CreateDefaultSubobject<UBoxComponent>(TEXT("SpawningBox"));
 	SpawningBox->SetupAttachment(Scene);
-
+	// 아이템 테이블 nullptr(블루프린트에서 입력)
 	ItemDataTable = nullptr;
 }
 
 
 AActor* ASpawnVolume::SpawnRandomItem()
 {
+	// 데이터 테이블의 아이템 종류와 확률대로 랜덤하게 SpawnItem 호출
 	if (FItemSpawnRow* SelectedRow = GetRandomItem())
 	{
 		if (UClass* ActualClass = SelectedRow->ItemClass.Get())
@@ -50,6 +51,7 @@ AActor* ASpawnVolume::SpawnItem(TSubclassOf<AActor> ItemClass)
 
 FVector ASpawnVolume::GetRandomPointInVolume() const
 {
+	// SpawningBox안에서 랜덤한 위치 return
 	FVector BoxExtent = SpawningBox->GetScaledBoxExtent();
 	FVector BoxOrigin = SpawningBox->GetComponentLocation();
 
@@ -63,13 +65,13 @@ FVector ASpawnVolume::GetRandomPointInVolume() const
 FItemSpawnRow* ASpawnVolume::GetRandomItem() const
 {
 	if (!ItemDataTable) return nullptr;
-
+	// ItemSpawnRow의 데이터 테이블에서 모든 Row 가져오기
 	TArray<FItemSpawnRow*> AllRows;
 	static const FString ContextString(TEXT("ItemSpawnContext"));
 	ItemDataTable->GetAllRows(ContextString, AllRows);
 
 	if (AllRows.IsEmpty()) return nullptr;
-
+	// 전체 확률 합계 계산
 	float TotalChance = 0.0f;
 	for (const FItemSpawnRow* Row : AllRows)
 	{
@@ -78,7 +80,7 @@ FItemSpawnRow* ASpawnVolume::GetRandomItem() const
 			TotalChance += Row->SpawnChance;
 		}
 	}
-
+	// 가중치 랜덤 선택
 	const float RandValue = FMath::FRandRange(0.0f, TotalChance);
 
 	float AccumulateChance = 0.0f;

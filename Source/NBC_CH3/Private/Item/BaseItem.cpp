@@ -40,7 +40,10 @@ void ABaseItem::OnItemOverlap(
     // OtherActor가 플레이어인지 확인 ("Player" 태그 활용)
     if (OtherActor && OtherActor->ActorHasTag("Player"))
     {
-        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Overlap!!!")));
+        if (IsValid(GEngine))
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Overlap!!!")));
+        }
         // 아이템 사용 (획득) 로직 호출
         ActivateItem(OtherActor);
     }
@@ -57,9 +60,13 @@ void ABaseItem::OnItemEndOverlap(
 
 void ABaseItem::ActivateItem(AActor* Activator)
 {
-    GEngine->AddOnScreenDebugMessage(
-        -1, 2.0f, FColor::Green, 
-        FString::Printf(TEXT("Overlap!!")));
+    if (IsValid(GEngine))
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1, 2.0f, FColor::Green,
+            FString::Printf(TEXT("Overlap!!")));
+    }
+
 }
 
 FName ABaseItem::GetItemType() const

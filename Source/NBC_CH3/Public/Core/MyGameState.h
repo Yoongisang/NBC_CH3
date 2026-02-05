@@ -46,7 +46,7 @@ private:
 	FTimerHandle HUDUpdateTimerHandle;
 
 	// 현재 점수
-	UPROPERTY(VisibleAnyWhere, BlueprintReadWrite, Category = "Score", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Score", meta = (AllowPrivateAccess = "true"))
 	int32 Score;
 
 	// 현재 레벨에서 스폰된 코인 개수

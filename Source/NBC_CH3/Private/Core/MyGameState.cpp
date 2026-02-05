@@ -117,7 +117,7 @@ void AMyGameState::StartLevel()
 		}
 	}
 
-	// 30초 후에 OnLevelTimeUp()가 호출되도록 타이머 설정
+	// 10초 후에 OnLevelTimeUp()가 호출되도록 타이머 설정
 	GetWorldTimerManager().SetTimer(
 		LevelTimerHandle,
 		this,
@@ -200,7 +200,7 @@ void AMyGameState::UpdateHUD()
 	// HUD 위젯의 시간, 점수, 현재 레벨, 현재 웨이브, 캐릭터 체력을 받아와서 SetText방식으로 업데이트
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
-		AMyPlayerController* PC = Cast<AMyPlayerController>(PlayerController);
+		if (AMyPlayerController* PC = Cast<AMyPlayerController>(PlayerController))
 		{
 			if (UUserWidget* HUDWidget = PC->GetHUDWidget())
 			{
@@ -230,7 +230,7 @@ void AMyGameState::UpdateHUD()
 				if (UTextBlock* HPText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Health"))))
 				{
 					if (AMyCharacter* MyCharacter = Cast<AMyCharacter>(PC->GetPawn()))
-					HPText->SetText(FText::FromString(FString::Printf(TEXT("HP : %d"), MyCharacter->GetHealth())));
+						HPText->SetText(FText::FromString(FString::Printf(TEXT("HP : %d"), MyCharacter->GetHealth())));
 				}
 			}
 		}

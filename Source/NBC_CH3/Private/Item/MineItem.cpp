@@ -10,7 +10,7 @@ AMineItem::AMineItem()
     // 변수 설정 및 ItemType 설정
     ExplosionDelay = 5.0f;
     ExplosionRadius = 300.0f;
-    ExplosionDamage = 30.0f;
+    ExplosionDamage = 30;
     ItemType = "Mine";
     // 콜리전 설정
     ExplosionCollision = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionCollision"));

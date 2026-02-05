@@ -66,7 +66,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
             {
                 EnhancedInput->BindAction( PlayerController->JumpAction, ETriggerEvent::Triggered, this, &AMyCharacter::StartJump);
 
-                EnhancedInput->BindAction(PlayerController->MoveAction, ETriggerEvent::Completed, this, &AMyCharacter::StopJump);
+                EnhancedInput->BindAction(PlayerController->JumpAction, ETriggerEvent::Completed, this, &AMyCharacter::StopJump);
             }
 
             if (PlayerController->LookAction)
